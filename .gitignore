@@ -353,3 +353,7 @@ MigrationBackup/
 .DS_Store
 ._.DS_Store
 
+/Saved/Config/CrashReportClient
+/Intermediate
+/Saved
+/Binaries/Win64

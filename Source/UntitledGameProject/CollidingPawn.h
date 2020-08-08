@@ -14,6 +14,7 @@ class UNTITLEDGAMEPROJECT_API ACollidingPawn : public APawn
 public:
 	// Sets default values for this pawn's properties
 	ACollidingPawn();
+	
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,4 +27,18 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UPROPERTY()
+		class UParticleSystemComponent* OurParticleSystem;
+
+	UPROPERTY()
+		class UCollidingPawnMovementComponent* OurMovementComponent;
+
+	virtual UPawnMovementComponent* GetMovementComponent() const override;
+
+	void MoveForward(float AxisValue);
+	void MoveRight(float AxisValue);
+	void Turn(float AxisValue);
+	void ParticleToggle();
+
+	
 };
