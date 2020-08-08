@@ -357,3 +357,5 @@ MigrationBackup/
 /Intermediate
 /Saved
 /Binaries/Win64
+
+.sln

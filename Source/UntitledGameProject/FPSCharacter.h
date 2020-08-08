@@ -15,6 +15,14 @@ public:
 	// Sets default values for this character's properties
 	AFPSCharacter();
 
+	// FPS camera.
+	UPROPERTY(VisibleAnywhere)
+	class UCameraComponent* FPSCameraComponent;
+
+	// First-person mesh (arms), visible only to the owning player.
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	USkeletalMeshComponent* FPSMesh;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -26,4 +34,21 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Handles input for moving forward and backward.
+	UFUNCTION()
+		void MoveForward(float Value);
+
+	// Handles input for moving right and left.
+	UFUNCTION()
+		void MoveRight(float Value);
+
+	// Sets jump flag when key is pressed.
+	UFUNCTION()
+		void StartJump();
+
+	// Clears jump flag when key is released.
+	UFUNCTION()
+		void StopJump();
+
+	
 };
