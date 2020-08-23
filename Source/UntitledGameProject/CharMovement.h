@@ -4,13 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-
-#include "Components/InputComponent.h"
-#include "GameFramework/Controller.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "Camera/CameraComponent.h"
-#include "GameFramework/SpringArmComponent.h"
-
 #include "CharMovement.generated.h"
 
 UCLASS()
@@ -22,14 +15,39 @@ public:
 	// Sets default values for this character's properties
 	ACharMovement();
 
+	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-		USpringArmComponent* CameraBoom;
+		class USpringArmComponent* CameraBoom;
 
+	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-		UCameraComponent* FollowCamera;
+		class UCameraComponent* FollowCamera;
 
-	void MoveForward(float axis);
-	void MoveRight(float axis);
+	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+		float BaseTurnRate;
+
+	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+		float BaseLookUpRate;
+
+	/** Called for forwards/backward input */
+	void MoveForward(float Value);
+
+	/** Called for side to side input */
+	void MoveRight(float Value);
+
+	/**
+	 * Called via input to turn at a given rate.
+	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
+	 */
+	void TurnAtRate(float Rate);
+
+	/**
+	 * Called via input to turn look up/down at a given rate.
+	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
+	 */
+	void LookUpAtRate(float Rate);
 
 protected:
 	// Called when the game starts or when spawned
@@ -41,5 +59,4 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 };
