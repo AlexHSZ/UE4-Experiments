@@ -31,6 +31,27 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		float BaseLookUpRate;
 
+	UPROPERTY(EditAnywhere)
+		float Thirst;
+
+	UPROPERTY(EditAnywhere)
+		float Hunger;
+
+	UPROPERTY(EditAnywhere)
+		float MaxThirst;
+
+	UPROPERTY(EditAnywhere)
+		float MaxHunger;
+
+	UPROPERTY()
+		FTimerHandle UnusedHandle;
+
+	UPROPERTY(EditAnywhere)
+		float DrainRate;
+
+	UFUNCTION(BlueprintCallable)
+		void DrainThirstHunger();
+
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
 

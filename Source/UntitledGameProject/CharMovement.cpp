@@ -10,6 +10,8 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 
+#include "Runtime/Engine/Public/TimerManager.h"
+
 // Sets default values
 ACharMovement::ACharMovement()
 {
@@ -44,6 +46,20 @@ ACharMovement::ACharMovement()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	/*
+		Thirst and Hunger system (To be expanded upon)
+	*/
+	Hunger = 100.f;
+	Thirst = 100.f;
+	MaxHunger = 100.f;
+	MaxThirst = 100.f;
+	DrainRate = 2.f;
+
+
+
 }
 
 // Called when the game starts or when spawned
@@ -51,6 +67,8 @@ void ACharMovement::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Using the game world timer manager to call the DrainThirstHunger function.
+	GetWorldTimerManager().SetTimer(UnusedHandle, this, &ACharMovement::DrainThirstHunger, DrainRate, true, 1.f);
 }
 
 // Called every frame
@@ -92,6 +110,17 @@ void ACharMovement::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void ACharMovement::DrainThirstHunger()
+{
+	Hunger -= 10.f;
+	Thirst -= 20.f;
+
+	if (Hunger <= 0 || Thirst <= 0)
+	{
+		Destroy();
+	}
 }
 
 void ACharMovement::MoveForward(float Value)
