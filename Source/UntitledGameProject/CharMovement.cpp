@@ -23,6 +23,9 @@ ACharMovement::ACharMovement()
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
 
+	// Trace Distance
+	TraceDistance = 2000.f;
+
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -72,6 +75,33 @@ void ACharMovement::BeginPlay()
 	GetWorldTimerManager().SetTimer(UnusedHandle, this, &ACharMovement::DrainThirstHunger, DrainRate, true, 1.f);
 }
 
+void ACharMovement::InteractPressed()
+{
+	TraceForward();
+}
+
+void ACharMovement::TraceForward_Implementation()
+{
+	FVector Loc;
+	FRotator Rot;
+	FHitResult Hit;
+
+	GetController()->GetPlayerViewPoint(Loc, Rot);
+
+	FVector Start = Loc;
+	FVector End = Start + (Rot.Vector() * TraceDistance);
+
+	FCollisionQueryParams TraceParams;
+	bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, TraceParams);
+
+	DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 2.f);
+
+	if (bHit)
+	{
+		DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(5, 5, 5), FColor::Emerald, false, 2.f);
+	}
+}
+
 // Called every frame
 void ACharMovement::Tick(float DeltaTime)
 {
@@ -112,23 +142,6 @@ void ACharMovement::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
-}
-
-void ACharMovement::InteractPressed()
-{
-	FVector Loc;
-	FRotator Rot;
-	FHitResult Hit;
-
-	GetController()->GetPlayerViewPoint(Loc, Rot);
-
-	FVector Start = Loc;
-	FVector End = Start + (Rot.Vector() * 2000);
-
-	FCollisionQueryParams TraceParams;
-	GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, TraceParams);
-
-	DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 2.f);
 }
 
 void ACharMovement::DrainThirstHunger()
