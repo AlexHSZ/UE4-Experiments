@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "DrawDebugHelpers.h"
 
 #include "Runtime/Engine/Public/TimerManager.h"
 
@@ -87,6 +88,7 @@ void ACharMovement::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACharMovement::InteractPressed);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACharMovement::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACharMovement::MoveRight);
@@ -112,15 +114,32 @@ void ACharMovement::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
+void ACharMovement::InteractPressed()
+{
+	FVector Loc;
+	FRotator Rot;
+	FHitResult Hit;
+
+	GetController()->GetPlayerViewPoint(Loc, Rot);
+
+	FVector Start = Loc;
+	FVector End = Start + (Rot.Vector() * 2000);
+
+	FCollisionQueryParams TraceParams;
+	GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, TraceParams);
+
+	DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 2.f);
+}
+
 void ACharMovement::DrainThirstHunger()
 {
 	Hunger -= 10.f;
 	Thirst -= 20.f;
 
-	if (Hunger <= 0 || Thirst <= 0)
+	/*if (Hunger <= 0 || Thirst <= 0)
 	{
 		Destroy();
-	}
+	}*/
 }
 
 void ACharMovement::MoveForward(float Value)

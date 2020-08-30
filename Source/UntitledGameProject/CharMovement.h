@@ -70,6 +70,8 @@ public:
 	 */
 	void LookUpAtRate(float Rate);
 
+	void InteractPressed();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
