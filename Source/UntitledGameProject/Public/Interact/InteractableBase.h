@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "InteractInterface.h"
 #include "InteractableBase.generated.h"
 
 UCLASS()
-class UNTITLEDGAMEPROJECT_API AInteractableBase : public AActor
+class UNTITLEDGAMEPROJECT_API AInteractableBase : public AActor, public IInteractInterface
 {
 	GENERATED_BODY()
 	
@@ -23,4 +24,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
+		void OnInteract(AActor* Caller);
+	virtual void OnInteract_Implementation(AActor* Caller);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
+		void StartFocus();
+	virtual void StartFocus_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
+		void EndFocus();
+	virtual void EndFocus_Implementation();
 };

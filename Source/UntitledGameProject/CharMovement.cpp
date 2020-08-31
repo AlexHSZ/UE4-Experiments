@@ -10,6 +10,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Public/Interact/InteractInterface.h"
 
 #include "Runtime/Engine/Public/TimerManager.h"
 
@@ -78,6 +79,15 @@ void ACharMovement::BeginPlay()
 void ACharMovement::InteractPressed()
 {
 	TraceForward();
+
+	if (FocusedActor)
+	{
+		IInteractInterface* Interface = Cast<IInteractInterface>(FocusedActor);
+		if (Interface)
+		{
+			Interface->Execute_OnInteract(FocusedActor, this);
+		}
+	}
 }
 
 void ACharMovement::TraceForward_Implementation()
@@ -94,11 +104,47 @@ void ACharMovement::TraceForward_Implementation()
 	FCollisionQueryParams TraceParams;
 	bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, TraceParams);
 
-	DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 2.f);
+	//DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 2.f);
 
 	if (bHit)
 	{
-		DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(5, 5, 5), FColor::Emerald, false, 2.f);
+		//DrawDebugBox(GetWorld(), Hit.ImpactPoint, FVector(5, 5, 5), FColor::Emerald, false, 2.f);
+		
+		AActor* Interactable = Hit.GetActor();
+
+
+		if (Interactable) 
+		{
+			if (Interactable != FocusedActor)
+			{
+				if (FocusedActor)
+				{
+					IInteractInterface* Interface = Cast<IInteractInterface>(FocusedActor);
+					if (Interface)
+					{
+						Interface->Execute_EndFocus(FocusedActor);
+					}
+				}
+				IInteractInterface* Interface = Cast<IInteractInterface>(Interactable);
+				if (Interface)
+				{
+					Interface->Execute_StartFocus(Interactable);
+				}
+				FocusedActor = Interactable;
+			}
+		}
+		else
+		{
+			if (FocusedActor)
+			{
+				IInteractInterface* Interface = Cast<IInteractInterface>(FocusedActor);
+				if (Interface)
+				{
+					Interface->Execute_EndFocus(FocusedActor);
+				}
+			}
+			FocusedActor = nullptr;
+		}
 	}
 }
 
@@ -106,7 +152,7 @@ void ACharMovement::TraceForward_Implementation()
 void ACharMovement::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	TraceForward();
 }
 
 // Called to bind functionality to input

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "InteractableBase.h"
+#include "../../Public/Interact/InteractableBase.h"
 
 // Sets default values
 AInteractableBase::AInteractableBase()
@@ -23,5 +23,20 @@ void AInteractableBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AInteractableBase::OnInteract_Implementation(AActor* Caller)
+{
+	Destroy();
+}
+
+void AInteractableBase::StartFocus_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Orange, TEXT("Start Focus"));
+}
+
+void AInteractableBase::EndFocus_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, TEXT("End Focus"));
 }
 

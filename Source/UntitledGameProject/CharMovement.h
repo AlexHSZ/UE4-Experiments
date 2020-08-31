@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Public/Interact/InteractInterface.h"
 #include "CharMovement.generated.h"
 
 UCLASS()
-class UNTITLEDGAMEPROJECT_API ACharMovement : public ACharacter
+class UNTITLEDGAMEPROJECT_API ACharMovement : public ACharacter, public IInteractInterface
 {
 	GENERATED_BODY()
 
@@ -89,4 +90,9 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+private:
+
+	AActor* FocusedActor;
+
 };
