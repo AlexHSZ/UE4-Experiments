@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "DrawDebugHelpers.h"
@@ -49,6 +50,8 @@ ACharMovement::ACharMovement()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
@@ -71,9 +74,10 @@ ACharMovement::ACharMovement()
 void ACharMovement::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SkeletalMesh->OnComponentBeginOverlap.AddDynamic(this, &ACharMovement::OnOverlapBegin);
 	// Using the game world timer manager to call the DrainThirstHunger function.
 	GetWorldTimerManager().SetTimer(UnusedHandle, this, &ACharMovement::DrainThirstHunger, DrainRate, true, 1.f);
+	
 }
 
 void ACharMovement::InteractPressed()
@@ -112,19 +116,25 @@ void ACharMovement::TraceForward_Implementation()
 		
 		AActor* Interactable = Hit.GetActor();
 
-
+		// Check if we have an interactable actor
 		if (Interactable) 
 		{
+			// Check if the interactable is not a nullptr
 			if (Interactable != FocusedActor)
-			{
+			{	
+				// Check that we have a focused actor currently stored
 				if (FocusedActor)
 				{
+					// If we have a new interactable or have lost focus on the focused actor, we will run the end focus function
+					// on the stored focused actor
 					IInteractInterface* Interface = Cast<IInteractInterface>(FocusedActor);
 					if (Interface)
 					{
 						Interface->Execute_EndFocus(FocusedActor);
 					}
 				}
+				// If we have new interactable actor, we start focus on that interactable object and 
+				// Set the focused actor to the interactable actor.
 				IInteractInterface* Interface = Cast<IInteractInterface>(Interactable);
 				if (Interface)
 				{
@@ -133,8 +143,10 @@ void ACharMovement::TraceForward_Implementation()
 				FocusedActor = Interactable;
 			}
 		}
+		// If we dont have an interactable actor
 		else
 		{
+			// But we do have a focused actor, we will end the focus on the stored focused actor
 			if (FocusedActor)
 			{
 				IInteractInterface* Interface = Cast<IInteractInterface>(FocusedActor);
@@ -143,8 +155,19 @@ void ACharMovement::TraceForward_Implementation()
 					Interface->Execute_EndFocus(FocusedActor);
 				}
 			}
+			// And set it to a nullptr
 			FocusedActor = nullptr;
 		}
+	}
+}
+
+void ACharMovement::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
+	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	IInteractInterface* Interface = Cast<IInteractInterface>(OtherActor);
+	if (Interface)
+	{
+		Interface->Execute_OnInteract(OtherActor, this);
 	}
 }
 
