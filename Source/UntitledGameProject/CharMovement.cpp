@@ -65,9 +65,6 @@ ACharMovement::ACharMovement()
 	MaxHunger = 100.f;
 	MaxThirst = 100.f;
 	DrainRate = 2.f;
-
-
-
 }
 
 // Called when the game starts or when spawned
