@@ -24,6 +24,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		class UCameraComponent* FollowCamera;
 
+	/** Inventory */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+		class UInventoryComponent* Inventory;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SkeletalMesh)
 		class USkeletalMeshComponent* SkeletalMesh = GetMesh();
 
@@ -61,6 +65,12 @@ public:
 
 	/** Called for side to side input */
 	void MoveRight(float Value);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+		float HP;
+
+	UFUNCTION(BlueprintCallable, Category = "Items")
+		void UseItem(class UItem* Item);
 
 	/**
 	 * Called via input to turn at a given rate.

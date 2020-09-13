@@ -12,6 +12,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Public/Interact/InteractInterface.h"
+#include "Items/Item.h"
+#include "Items/InventoryComponent.h"
 
 #include "Runtime/Engine/Public/TimerManager.h"
 
@@ -50,7 +52,8 @@ ACharMovement::ACharMovement()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	
+	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
+	Inventory->Capacity = 20;
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
@@ -65,6 +68,8 @@ ACharMovement::ACharMovement()
 	MaxHunger = 100.f;
 	MaxThirst = 100.f;
 	DrainRate = 2.f;
+
+	HP = 100.f;
 }
 
 // Called when the game starts or when spawned
@@ -247,6 +252,15 @@ void ACharMovement::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+	}
+}
+
+void ACharMovement::UseItem(UItem* Item)
+{
+	if (Item)
+	{
+		Item->Use(this);
+		Item->OnUse(this); // BP Event
 	}
 }
 
