@@ -1,7 +1,8 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "UntitledGameProject.h"
+
 #include "UntitledGameProjectGameModeBase.h"
+#include "UntitledGameProject.h"
 
 void AUntitledGameProjectGameModeBase::StartPlay()
 {

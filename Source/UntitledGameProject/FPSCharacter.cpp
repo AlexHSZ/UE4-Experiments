@@ -1,11 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "UntitledGameProject.h"
+
 #include "FPSCharacter.h"
+#include "UntitledGameProject.h"
 #include "FPSProjectile.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Engine.h"
 
 // Sets default values
 AFPSCharacter::AFPSCharacter()
@@ -119,7 +121,7 @@ void AFPSCharacter::Fire()
 		{
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
-			SpawnParams.Instigator = Instigator;
+			//SpawnParams.Instigator = Instigator;
 			// Spawn the projectile at the muzzle.
 			AFPSProjectile* Projectile = World->SpawnActor<AFPSProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
 			if (Projectile)
